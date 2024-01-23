@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
     {
-        username: {
+        userName: {
             type: String,
             required: true,
             unique: true,
@@ -32,10 +32,12 @@ const userSchema = new mongoose.Schema(
                 ref: "Recipe",
             },
         ],
+        active: {
+            type: Boolean,
+            default: true,
+        },
     },
     { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = { User };
+module.exports = mongoose.model("User", userSchema);

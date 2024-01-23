@@ -5,6 +5,7 @@ const routes = require("./routes");
 const helmet = require("helmet");
 const cors = require("cors");
 const config = require("./config/keys");
+const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 const http = require("http");
 
@@ -28,6 +29,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/api", routes);
+
+// app.use(notFound)
+// app.use(errorHandler)
 
 // app.use(routes);
 
