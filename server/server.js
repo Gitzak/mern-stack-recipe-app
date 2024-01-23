@@ -36,3 +36,5 @@ database.connectToMongo();
 app.listen(config.port, () => {
     console.log(`\x1b[33m Server is running on port ${config.port} \x1b[0m`);
 });
+
+// hello
