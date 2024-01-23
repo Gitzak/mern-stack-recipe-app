@@ -8,6 +8,7 @@ const recipeSchema = new mongoose.Schema({
     rating: { type: Number, default: 0 },
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }],
+    nutrition : [{ label : String , value : String }] , 
     recipe_images: [String], 
     comments: [{
         user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
