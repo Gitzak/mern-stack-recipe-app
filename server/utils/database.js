@@ -1,11 +1,14 @@
+require('dotenv').config();
+const { config } = require('dotenv');
 const { color, database } = require("../config/keys");
 
 const mongoose = require("mongoose");
 
 exports.connection = () => {
     function connectToMongo() {
+        
         mongoose
-            .connect(database.url)
+            .connect(process.env.MONGO_URI)
             .then(
                 () => {},
                 (err) => {

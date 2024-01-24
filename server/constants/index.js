@@ -15,6 +15,7 @@ module.exports.ROUTE_NOT_FOUND        = "You are at wrong place. Shhoooo...";
 module.exports.SERVER_ERROR           = "Something bad happened please try again";
 module.exports.INSUFFICIENT_PRIVILEGE = "You don't have enough privilege";
 module.exports.INVALID_CREDENTIALS    = "Invalid credentials";
+module.exports.SERVER_ALREADY_EXISTS  = "Data already exists";
 
 // Mail related messages
 module.exports.EMAIL_SEND_ERROR   = "Error sending email";
