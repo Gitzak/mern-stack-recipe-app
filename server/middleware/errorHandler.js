@@ -1,12 +1,15 @@
 const errorHandler = (err, req, res, next) => {
-    // MongoDB error handling can be added here
-    if (err.name === "MongoError") {
-        // handle MongoDB-specific errors
-        return res.status(500).json({ message: "MongoDB Error Occurred", error: err.message });
-    }
-
-    // Generic error response
-    res.status(500).json({ message: "An error occurred", error: err.message });
+  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let message = err.message;
+  // check mongoose object id:
+  if (err.name === "CastError" && err.kind === "ObjectId") {
+    message = `Resource not found`;
+    statusCode = 404;
+  }
+  res.status(statusCode).json({
+    message,
+    stack: err.stack,
+  });
 };
 
 module.exports = { errorHandler };

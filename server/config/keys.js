@@ -6,7 +6,7 @@ module.exports = {
     },
     port: process.env.PORT || 7500,
     database: {
-        url: process.env.MONGO_URI,
+        url: "MONGO_URI=mongodb+srv://root:WkTHsleW5BVv8TQs@cluster0.qqnhiwy.mongodb.net/mern_app_recipe",
     },
     jwt: {
         secret: process.env.JWT_SECRET,

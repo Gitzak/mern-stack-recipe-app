@@ -21,6 +21,10 @@ class UserRepository {
         
         return userWithoutPassword;
     }
+
+    async DeleteUser(id){
+        return await this.userModel.findByIdAndDelete(id)
+    }
 }
 
 module.exports = { UserRepository };

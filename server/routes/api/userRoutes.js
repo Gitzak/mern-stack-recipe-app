@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { createUser } = require("../../controllers/userController");
+const { createUser, deleteUser } = require("../../controllers/userController");
 
 //create new user
 router.post("/", createUser);
@@ -18,6 +18,6 @@ router.post("/", createUser);
 // // User update route
 // router.patch("/update/:id", updateUser);
 // //delete account for customer
-// router.delete("/delete/:id", deleteCustomer);
+router.delete("/delete/:id", deleteUser);
 
 module.exports = router;
