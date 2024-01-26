@@ -9,9 +9,22 @@ class CategoryService {
 
     async createCategory(req) {
         const response = {};
-        const { categoryName, description } = req.body;
-
+        const { categoryName, description, parentId, active} = req.body;
         const file = req.file;
+        let parentName = null;
+        if (parentId != "null") {
+            try {
+                const foundedCategory = await this.categoryRepo.findCategoryById({ _id: parentId });
+                parentName = foundedCategory.categoryName;
+            } catch {
+                response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
+                response.message = CONSTANTS.SERVER_ERROR;
+                return response;
+            }
+        }
+
+
+
         let imageUrl = null;
 
         if (file) {
@@ -25,10 +38,12 @@ class CategoryService {
                 });
             });
         }
-        console.log('url', imageUrl);
         const newCategory = {
             categoryName,
             description,
+            parentId,
+            active,
+            parentName,
             categoryImage: imageUrl ? imageUrl : null,
         };
 
@@ -49,7 +64,18 @@ class CategoryService {
     async updateCategory(req) {
         const response = {};
         const categoryId = req.params.id;
-        const { categoryName, description } = req.body;
+        const { categoryName, description, parentId, active } = req.body;
+        let parentName = null;
+        if (parentId != "null") {
+            try {
+                const foundedCategory = await this.categoryRepo.findCategoryById({ _id: parentId });
+                parentName = foundedCategory.categoryName;
+            } catch {
+                response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
+                response.message = CONSTANTS.SERVER_ERROR;
+                return response;
+            }
+        }
 
         const file = req.file;
         let imageUrl = null;
@@ -69,6 +95,9 @@ class CategoryService {
         const newCategory = {
             categoryName,
             description,
+            parentName,
+            parentId,
+            active,
             categoryImage: imageUrl ? imageUrl : null,
         };
 
@@ -82,7 +111,6 @@ class CategoryService {
 
         response.message = "UPDATED";
         response.status = CONSTANTS.SERVER_UPDATED_HTTP_CODE;
-        console.log(response);
         return response;
     }
 
