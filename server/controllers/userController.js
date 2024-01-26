@@ -13,6 +13,12 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     res.status(newUser.status).json(newUser);
 });
 
+// Register new user
+exports.registerUser = asyncHandler(async (req, res, next) => {
+    const newUser = await userServ.registerUser(req);
+    res.status(newUser.status).json(newUser);
+});
+
 exports.loginUser = async (req, res) => {
     const user = await userServ.Login(req)
     res.json(user)
