@@ -18,6 +18,7 @@ class RecipeService {
         }
         response.message = "OK";
         response.status = CONSTANTS.SERVER_OK_HTTP_CODE;
+        response.data = recipe;
 
         return response;
     }
