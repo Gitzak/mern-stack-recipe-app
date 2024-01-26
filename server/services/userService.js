@@ -3,7 +3,9 @@ const config = require("./../config/keys");
 const { HashPassword, VerifyPassword } = require("../utils/Hashing.js");
 const jwt = require("jsonwebtoken");
 const SendMailToUser = require("../utils/sendMail");
-const { sign } = require("../utils/JWT.js");
+// const { sign } = require("../utils/JWT.js");
+const { sendResponse } = require('../Helpers/sendResponse')
+
 
 class UserService {
     constructor(userRepo) {
@@ -27,6 +29,7 @@ class UserService {
         };
         
         const user = await this.userRepo.AddUser(newUser);
+        console.log('user ' , user);
 
         if (!user) {
             response.message = CONSTANTS.SERVER_ERROR;
@@ -45,6 +48,80 @@ class UserService {
         return response;
     }
 
+    async Login(req) {
+        try {
+            const jwtSecret = config.jwt.secret;
+            const { email, password } = req.body
+            const user = await this.userRepo.Login(email)
+            if (!user) {
+                return sendResponse(CONSTANTS.LOGIN_ERROR, CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE)
+            }
+            const passwordMatch = await VerifyPassword(password, user.password)
+            if (!passwordMatch) {
+                return sendResponse(CONSTANTS.LOGIN_ERROR, CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE)
+            }
+            
+            const token = jwt.sign({ userId: user._id, userName: user.userName, email: user.email, role: user.role, active: user.active ,profilePicture : user.profilePicture}, jwtSecret)
+            await user.updateLastLogin();
+            
+            return sendResponse(CONSTANTS.USER_LOGIN_OK, CONSTANTS.SERVER_OK_HTTP_CODE, { token })
+        } catch (error) {
+            console.error('Error getting logged:', error.message);
+        }
+    }
+
+    async updateUser(req){
+        try {
+            const id=req.params.id
+
+            if(req.user.userId==id){  
+                const data=req.body
+
+                if (data.password) {
+                    data.hashedPass = await HashPassword(data.password);
+                    data.password = data.hashedPass;
+                }
+                const user = await this.userRepo.updateUser(id,data);
+
+                if(!user){
+                    return sendResponse(CONSTANTS.USER_NOT_FOUND,CONSTANTS.SERVER_ERROR_HTTP_CODE)
+                }
+                else{
+                    return sendResponse("user updated",CONSTANTS.SERVER_OK_HTTP_CODE)
+                }
+            }
+            return sendResponse("You are not authorized to update",CONSTANTS.SERVER_NOT_ALLOWED_HTTP_CODE)
+        } catch (error) {
+            if (error.code === 11000) {
+                // Handle the duplicate key error (E11000)
+                // Return a response indicating that the category already exists
+                return sendResponse(CONSTANTS.SERVER_ALREADY_EXISTS, CONSTANTS.SERVER_BAD_REQUEST_HTTP_CODE);
+            }
+        }
+     }
+
+     async validation(req){
+        try{
+            const id=req.params.id
+            const user = await this.userRepo.getUserById(id); //had function khss nakhd smya mn repo lidaro drari f get userbyid
+            if(!user){
+                return sendResponse(CONSTANTS.USER_NOT_FOUND, CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE);
+            }
+            if(user.active) {
+                return sendResponse("User is already activated", CONSTANTS.SERVER_OK_HTTP_CODE);
+            }
+
+            const data = { active: true };
+            await this.userRepo.updateUser(id , data);
+
+            return sendResponse("User activated successfully", CONSTANTS.SERVER_OK_HTTP_CODE);
+        }catch (error) {
+            sendResponse('something went wrong',CONSTANTS.SERVER_ERROR_HTTP_CODE)
+        }
+     }
+
 }
+
+
 
 module.exports = { UserService };

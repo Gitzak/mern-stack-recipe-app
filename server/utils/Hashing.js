@@ -6,7 +6,7 @@ class BcryptHash {
             const hashedPassword = await bcrypt.hash(password, salt);
             return hashedPassword;
         } catch (err) {
-            throw error;
+            throw err;
         }
     }
 
