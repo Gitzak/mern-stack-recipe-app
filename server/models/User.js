@@ -32,12 +32,19 @@ const userSchema = new mongoose.Schema(
                 ref: "Recipe",
             },
         ],
+        last_login: {
+            type: Date,
+            default: null
+        },
         active: {
             type: Boolean,
-            default: true,
+            default: false,
         },
-    },
-    { timestamps: true }
-);
+    },{ timestamps: true })
+
+    userSchema.methods.updateLastLogin = function () {
+        this.last_login = new Date();
+        return this.save();
+    };
 
 module.exports = mongoose.model("User", userSchema);

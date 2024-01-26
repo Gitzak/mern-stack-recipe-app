@@ -1,4 +1,5 @@
 const CONSTANTS = require("../constants");
+const cloudinary = require("../utils/cloudinary");
 
 class CategoryService {
     constructor(categoryRepo, RecipeRepo) {
@@ -24,7 +25,7 @@ class CategoryService {
                 });
             });
         }
-
+        console.log('url', imageUrl);
         const newCategory = {
             categoryName,
             description,
@@ -81,7 +82,7 @@ class CategoryService {
 
         response.message = "UPDATED";
         response.status = CONSTANTS.SERVER_UPDATED_HTTP_CODE;
-
+        console.log(response);
         return response;
     }
 

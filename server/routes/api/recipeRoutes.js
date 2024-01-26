@@ -1,4 +1,5 @@
 const express = require("express");
+const { getRecipeById } = require("../../controllers/recipeController");
 const router = express.Router();
 
 // //create new recipe
