@@ -62,7 +62,6 @@ class UserService {
             }
             
             const token = jwt.sign({ userId: user._id, userName: user.userName, email: user.email, role: user.role, active: user.active ,profilePicture : user.profilePicture}, jwtSecret)
-            console.log(token);
             await user.updateLastLogin();
             
             return sendResponse(CONSTANTS.USER_LOGIN_OK, CONSTANTS.SERVER_OK_HTTP_CODE, { token })
@@ -104,18 +103,22 @@ class UserService {
      async validation(req){
         try{
             const id=req.params.id
-            if(req.user.userId === id){
-                const data = { active: true };
-                await this.userRepo.validation(id,data);
-                return sendResponse("User Activated",CONSTANTS.SERVER_OK_HTTP_CODE)
-            }else{
-                return sendResponse(CONSTANTS.INSUFFICIENT_PRIVILEGE,CONSTANTS.SERVER_INVALID_CREDENTIALS)
+            const user = await this.userRepo.getUserById(id); //had function khss nakhd smya mn repo lidaro drari f get userbyid
+            if(!user){
+                return sendResponse(CONSTANTS.USER_NOT_FOUND, CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE);
             }
+            if(user.active) {
+                return sendResponse("User is already activated", CONSTANTS.SERVER_OK_HTTP_CODE);
+            }
+
+            const data = { active: true };
+            await this.userRepo.updateUser(id , data);
+
+            return sendResponse("User activated successfully", CONSTANTS.SERVER_OK_HTTP_CODE);
         }catch (error) {
             sendResponse('something went wrong',CONSTANTS.SERVER_ERROR_HTTP_CODE)
         }
      }
-
 
 }
 

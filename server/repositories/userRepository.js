@@ -30,13 +30,11 @@ class UserRepository {
 
     async updateUser(id,data){
         const user= await this.userModel.findOneAndUpdate({_id: id},data,{new: true , runValidators: true});
-        console.log(Error);
         return user;
     };
-
-    async validation(id,data){
-        const user = await this.userModel.findOneAndUpdate({_id: id},data,{new: true});
-        return user;
+    async getUserById(id) {
+            const user = await this.userModel.findById(id);
+            return user;
     }
 }
 

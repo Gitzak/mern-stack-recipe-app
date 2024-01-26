@@ -13,7 +13,7 @@ router.post("/", createUser);
 // login user route
 router.post("/login",loginValidator, loginUser);
 //user validation account
-router.put("/validate/:id",TokenCheck, validateUser);
+router.put("/validate/:id", validateUser);
 // //get all users list
 // router.get("/", getUsers);
 // //get user by id
