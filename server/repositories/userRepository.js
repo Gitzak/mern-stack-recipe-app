@@ -19,25 +19,39 @@ class UserRepository {
 
         const userWithoutPassword = createUser.toObject();
         delete userWithoutPassword.password;
-        
+
         return userWithoutPassword;
     }
 
-    async Login(email) {
-        const user = await this.userModel.findOne({ email: email })
-        return user
+    async registerUser(user) {
+        const { role, userName, email, hashedPass } = user;
+
+        const createUser = await this.userModel.create({
+            role,
+            userName,
+            email,
+            password: hashedPass,
+        });
+
+        const clientWithoutPassword = createUser.toObject();
+        delete clientWithoutPassword.password;
+
+        return clientWithoutPassword;
     }
 
-    async updateUser(id,data){
-        const user= await this.userModel.findOneAndUpdate({_id: id},data,{new: true , runValidators: true});
+    async Login(email) {
+        const user = await this.userModel.findOne({ email: email });
         return user;
-    };
+    }
+
+    async updateUser(id, data) {
+        const user = await this.userModel.findOneAndUpdate({ _id: id }, data, { new: true, runValidators: true });
+        return user;
+    }
     async getUserById(id) {
-            const user = await this.userModel.findById(id);
-            return user;
+        const user = await this.userModel.findById(id);
+        return user;
     }
 }
 
-
 module.exports = { UserRepository };
-
