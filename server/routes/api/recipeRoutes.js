@@ -6,8 +6,8 @@ const router = express.Router();
 // router.post("/", createRecipe);
 // //get all recipes list
 // router.get("/", listRecipes);
-// //get recipe by id
-// router.get("/:id", getRecipeById);
+//get recipe by id
+router.get("/:id", getRecipeById);
 // //update recipe data
 // router.patch("/:id", updateRecipe);
 // //delete recipe
