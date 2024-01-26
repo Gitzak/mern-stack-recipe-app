@@ -1,27 +1,64 @@
 const CONSTANTS = require("../constants/index");
 
 class UserRepository {
-    constructor(userModel) {
-        this.userModel = userModel;
-    }
+  constructor(userModel) {
+    this.userModel = userModel;
+  }
 
-    async AddUser(user) {
-        const { role, userName, email, hashedPass, active } = user;
+  async AddUser(user) {
+    const { role, userName, email, hashedPass, active } = user;
 
-        const createUser = await this.userModel.create({
-            role,
-            userName,
-            email,
-            password: hashedPass,
-            active,
-        });
+    const createUser = await this.userModel.create({
+      role,
+      userName,
+      email,
+      password: hashedPass,
+      active,
+    });
 
-        const userWithoutPassword = createUser.toObject();
-        delete userWithoutPassword.password;
-        
-        return userWithoutPassword;
-    }
+    const userWithoutPassword = createUser.toObject();
+    delete userWithoutPassword.password;
+
+    return userWithoutPassword;
+  }
+
+  async searchUsers(query, skip, limit, sort) {
+    const queryOptions = {
+      $or: [
+        { email: { $regex: query, $options: "i" } },
+        { firstName: { $regex: query, $options: "i" } },
+        { lastName: { $regex: query, $options: "i" } },
+      ],
+    };
+
+    const searchedUsers = await this.userModel
+      .find(queryOptions)
+      .select("-password")
+      .sort({ creationDate: sort === "ASC" ? 1 : -1 })
+      .skip(skip)
+      .limit(limit);
+
+    return searchedUsers;
+  }
+
+  async getUsers(skip, limit, sort) {
+    const users = await this.userModel
+      .aggregate([
+        { $sort: { creationDate: -1 } },
+        { $project: { password: 0 } }, // Exclude the password field
+      ])
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    return users;
+  }
+
+  async FindById(userId) {
+    const userWithoutPass = await this.userModel
+      .findById(userId)
+      .select("-password");
+    return userWithoutPass;
+  }
 }
 
 module.exports = { UserRepository };
-
