@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const morgan = require("morgan");
 const routes = require("./routes");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(morgan("dev"));
 // Enable CORS with specific origin
 const corsOptions = {
   origin: config.app.origin_front, // replace with the actual origin of your frontend

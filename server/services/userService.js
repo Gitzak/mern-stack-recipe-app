@@ -50,9 +50,8 @@ class UserService {
     const { id } = parseInt(req.params);
     const recipe = await this.userRepo.DeleteUser(id);
     if (!recipe) {
-      response.message = CONSTANTS.SERVER_ERROR;
       response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-      return response;
+      throw new Error("Couldn't delete this user" + id);
     }
     return response;
   }

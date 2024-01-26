@@ -10,9 +10,8 @@ class RecipeService {
     const response = {};
     const recipes = await this.recipeRepo.GetRecipes();
     if (!recipes) {
-      response.message = CONSTANTS.SERVER_ERROR;
       response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-      return response;
+      throw new Error("Couldn't retrieve recipes");
     }
     response.status = CONSTANTS.SERVER_OK_HTTP_CODE;
     response.data = recipes;
@@ -24,9 +23,8 @@ class RecipeService {
     const { id } = parseInt(req.params);
     const recipe = await this.recipeRepo.DeleteRecipe(id);
     if (!recipe) {
-      response.message = CONSTANTS.SERVER_ERROR;
       response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-      return response;
+      throw new Error("Couldn't delete this recipe");
     }
     return response;
   }
