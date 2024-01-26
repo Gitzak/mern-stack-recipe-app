@@ -15,6 +15,21 @@ const categorySchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        parentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category",
+            type: String,
+            required: false,
+        },
+        parentName: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        active: {
+            type: Boolean,
+            default: true,
+        },
     },
     { timestamps: true }
 );
