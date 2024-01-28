@@ -9,8 +9,18 @@ const userServ = new UserService(userRepo);
 
 // create new user
 exports.createUser = asyncHandler(async (req, res, next) => {
-    const newUser = await userServ.AddUser(req);
-    res.status(newUser.status).json(newUser);
+  const newUser = await userServ.AddUser(req);
+  res.status(newUser.status).json(newUser);
+});
+// Get all users
+exports.getUsers = asyncHandler(async (req, res, next) => {
+  const users = await userServ.getUsers(req);
+  res.status(users.status).json(users);
+});
+// Get One User By Id
+exports.getUserById = asyncHandler(async (req, res, next) => {
+  const user = await userServ.getUserById(req);
+  res.status(user.status).json(user);
 });
 
 // Register new user

@@ -1,3 +1,5 @@
+const CONSTANTS = require("../constants/index");
+
 class RecipeRepository {
     constructor(recipeModel) {
         this.recipeModel = recipeModel;
@@ -17,6 +19,9 @@ class RecipeRepository {
             categories: id,
         });
         return hasRecipes > 0;
+    async createRecipe(recipe) {
+        const newRecipe = await this.recipeModel.create(recipe);
+        return newRecipe;
     }
 }
 
