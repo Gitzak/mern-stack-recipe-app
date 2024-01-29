@@ -1,55 +1,54 @@
 class CategoryRepository {
-    constructor(categoryModel) {
-        this.categoryModel = categoryModel;
-    }
+  constructor(categoryModel) {
+    this.categoryModel = categoryModel;
+  }
 
-    async createCategory(categoryEntry) {
-        const category = await this.categoryModel.create(categoryEntry);
-        return category;
-    }
+  async createCategory(categoryEntry) {
+    return this.categoryModel.create(categoryEntry);
+  }
 
-    async updateCategory(categoryId, categoryEntry) {
-        const updatedCategory = await this.categoryModel.findOneAndUpdate({ _id: categoryId }, categoryEntry, { upsert: false, new: true });
-        return updatedCategory;
-    }
+  async updateCategory(categoryId, categoryEntry) {
+    return await this.categoryModel.findByIdAndUpdate(
+      categoryId,
+      categoryEntry,
+      { runValidators: false, new: true, timeout: 30000 }, // Increase timeout to 30 seconds
+    );
+  }
 
-    async getCategories(skip, limit, sort) {
-        const catefories = await this.categoryModel
-            .aggregate([{ $sort: { category_name: -1 } }])
-            .skip(skip)
-            .limit(limit)
-            .exec();
-        return catefories;
-    }
+  async getCategories(skip, limit, sort) {
+    return await this.categoryModel
+      .aggregate([{ $sort: { categoryName: -1 } }])
+      .skip(skip)
+      .limit(limit)
+      .exec();
+  }
 
-    async searchCategories(query, skip, limit, sort) {
-        const queryOptions = {
-            $or: [{ category_name: { $regex: query, $options: "i" } }],
-        };
+  async searchCategories(query, skip, limit, sort) {
+    const queryOptions = {
+      $or: [{ categoryName: { $regex: query, $options: "i" } }],
+    };
 
-        const catefories = await this.categoryModel
-            .find(queryOptions)
-            .sort({ category_name: sort === "ASC" ? 1 : -1 })
-            .skip(skip)
-            .limit(limit);
+    return await this.categoryModel
+      .find(queryOptions)
+      .sort({ categoryName: sort === "ASC" ? 1 : -1 })
+      .skip(skip)
+      .limit(limit);
+  }
 
-        return catefories;
-    }
+  async findCategoryById(categoryId) {
+    return await this.categoryModel.findOne({ _id: categoryId });
+  }
 
-    async findCategoryById(categoryId) {
-        const category = await this.categoryModel.findById(categoryId);
-        return category;
-    }
+  async hasChildCategories(categoryId) {
+    const childCategories = await this.categoryModel.find({
+      parentId: categoryId,
+    });
+    return childCategories.length > 0;
+  }
 
-    async hasChildCategories(categoryId) {
-        const childCategories = await this.categoryModel.find({ parentId: categoryId });
-        return childCategories.length > 0;
-    }
-
-    async DeleteCategory(categoryId) {
-        const deletedCategory = await this.categoryModel.findByIdAndDelete(categoryId);
-        return deletedCategory;
-    }
+  async DeleteCategory(categoryId) {
+    return await this.categoryModel.findByIdAndDelete(categoryId);
+  }
 }
 
 module.exports = { CategoryRepository };

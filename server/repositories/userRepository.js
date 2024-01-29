@@ -6,77 +6,6 @@ class UserRepository {
     this.userModel = userModel;
   }
 
-  async AddUser(user) {
-    const { role, userName, email, hashedPass, active } = user;
-
-    const createUser = await this.userModel.create({
-      role,
-      userName,
-      email,
-      password: hashedPass,
-      active,
-    });
-
-        const userWithoutPassword = createUser.toObject();
-        delete userWithoutPassword.password;
-
-        return userWithoutPassword;
-    }
-
-    async registerUser(user) {
-        const { role, userName, email, hashedPass } = user;
-
-        const createUser = await this.userModel.create({
-            role,
-            userName,
-            email,
-            password: hashedPass,
-        });
-
-        const clientWithoutPassword = createUser.toObject();
-        delete clientWithoutPassword.password;
-
-        return clientWithoutPassword;
-    }
-
-    async Login(email) {
-        const user = await this.userModel.findOne({ email: email });
-        return user;
-    }
-
-    async updateUser(id, data) {
-        const user = await this.userModel.findOneAndUpdate({ _id: id }, data, { new: true, runValidators: true });
-        return user;
-    }
-    async getUserById(id) {
-        const user = await this.userModel.findById(id);
-        return user;
-    }
-    const userWithoutPassword = createUser.toObject();
-    delete userWithoutPassword.password;
-
-    return userWithoutPassword;
-  }
-
-  async searchUsers(query, skip, limit, sort) {
-    const queryOptions = {
-      $or: [
-        { email: { $regex: query, $options: "i" } },
-        { firstName: { $regex: query, $options: "i" } },
-        { lastName: { $regex: query, $options: "i" } },
-      ],
-    };
-
-    const searchedUsers = await this.userModel
-      .find(queryOptions)
-      .select("-password")
-      .sort({ creationDate: sort === "ASC" ? 1 : -1 })
-      .skip(skip)
-      .limit(limit);
-
-    return searchedUsers;
-  }
-
   async getUsers(skip, limit, sort) {
     const users = await this.userModel
       .aggregate([
@@ -89,11 +18,67 @@ class UserRepository {
     return users;
   }
 
+  async AddUser(user) {
+    const { role, userName, email, hashedPass, active } = user;
+
+    const createUser = await this.userModel.create({
+      role,
+      userName,
+      email,
+      password: hashedPass,
+      active,
+    });
+
+    const userWithoutPassword = createUser.toObject();
+    delete userWithoutPassword.password;
+
+    return userWithoutPassword;
+  }
+
+  async registerUser(user) {
+    const { role, userName, email, hashedPass } = user;
+
+    const createUser = await this.userModel.create({
+      role,
+      userName,
+      email,
+      password: hashedPass,
+    });
+
+    const clientWithoutPassword = createUser.toObject();
+    delete clientWithoutPassword.password;
+
+    return clientWithoutPassword;
+  }
+
+  async Login(email) {
+    const user = await this.userModel.findOne({ email: email });
+    return user;
+  }
+
+  async updateUser(id, data) {
+    const user = await this.userModel.findOneAndUpdate({ _id: id }, data, {
+      new: true,
+      runValidators: true,
+    });
+    return user;
+  }
+  // async getUserById(id) {
+  //   const user = await this.userModel.findById(id);
+  //   return user;
+  // }
+
   async FindById(userId) {
     const userWithoutPass = await this.userModel
-      .findById(userId)
-      .select("-password");
+      .findOne({ _id: userId })
+      .select("-password")
+      .lean();
+
     return userWithoutPass;
+  }
+
+  async DeleteUser(id) {
+    return await this.userModel.findByIdAndDelete(id);
   }
 }
 

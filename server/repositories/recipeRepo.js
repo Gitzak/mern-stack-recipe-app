@@ -1,28 +1,47 @@
 const CONSTANTS = require("../constants/index");
 
-class RecipeRepository {
-    constructor(recipeModel) {
-        this.recipeModel = recipeModel;
-    }
+class RecipeRepo {
+  constructor(recipeModel) {
+    this.recipeModel = recipeModel;
+  }
 
-    async getRecipeById(recipeId) {
-        const recipe = await this.recipeModel
-            .findById(recipeId)
-            .populate("categories")
-            .populate("comments.userId", "userName") // Populate the username from the User model
-            .exec();
-        return recipe;
-    }
+  async GetRecipes() {
+    return await this.recipeModel.find({});
+  }
 
-    async hasRecipes(id) {
-        const hasRecipes = await this.recipeModel.countDocuments({
-            categories: id,
-        });
-        return hasRecipes > 0;
-    async createRecipe(recipe) {
-        const newRecipe = await this.recipeModel.create(recipe);
-        return newRecipe;
-    }
+  async getRecipeById(recipeId) {
+    const recipe = await this.recipeModel.findOne({ _id: recipeId });
+    // .populate("categories")
+    // .populate("comments.userId", "userName") // Populate the username from the User model
+    // .exec();
+    return recipe;
+  }
+
+  async createRecipe(recipe) {
+    const newRecipe = await this.recipeModel.create(recipe);
+    return newRecipe;
+  }
+
+  async UpdateRecipe(id, recipe) {
+    return await this.recipeModel.findByIdAndUpdate(id, recipe, {
+      runValidators: true,
+      new: true,
+    });
+  }
+
+  async DeleteRecipe(id) {
+    return await this.recipeModel.findByIdAndDelete(id);
+  }
+
+  async hasRecipes(id) {
+    const hasRecipes = await this.recipeModel
+      .findOne({
+        categories: id,
+      })
+      .select("_id"); // Selecting only the _id field to optimize the query
+
+    return !!hasRecipes; // Converts the result to a boolean
+  }
 }
 
-module.exports = { RecipeRepository };
+module.exports = { RecipeRepo };
