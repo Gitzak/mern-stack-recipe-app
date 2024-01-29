@@ -4,26 +4,23 @@ class CategoryRepository {
   }
 
   async createCategory(categoryEntry) {
-    const category = await this.categoryModel.create(categoryEntry);
-    return category;
+    return this.categoryModel.create(categoryEntry);
   }
 
   async updateCategory(categoryId, categoryEntry) {
-    const updatedCategory = await this.categoryModel.findOneAndUpdate(
-      { _id: categoryId },
+    return await this.categoryModel.findByIdAndUpdate(
+      categoryId,
       categoryEntry,
-      { upsert: false, new: true },
+      { runValidators: false, new: true },
     );
-    return updatedCategory;
   }
 
   async getCategories(skip, limit, sort) {
-    const categories = await this.categoryModel
+    return await this.categoryModel
       .aggregate([{ $sort: { categoryName: -1 } }])
       .skip(skip)
       .limit(limit)
       .exec();
-    return categories;
   }
 
   async searchCategories(query, skip, limit, sort) {
@@ -31,18 +28,15 @@ class CategoryRepository {
       $or: [{ categoryName: { $regex: query, $options: "i" } }],
     };
 
-    const catefories = await this.categoryModel
+    return await this.categoryModel
       .find(queryOptions)
       .sort({ categoryName: sort === "ASC" ? 1 : -1 })
       .skip(skip)
       .limit(limit);
-
-    return catefories;
   }
 
   async findCategoryById(categoryId) {
-    const category = await this.categoryModel.findOne({ _id: categoryId });
-    return category;
+    return await this.categoryModel.findOne({ _id: categoryId });
   }
 
   async hasChildCategories(categoryId) {
@@ -53,9 +47,7 @@ class CategoryRepository {
   }
 
   async DeleteCategory(categoryId) {
-    const deletedCategory =
-      await this.categoryModel.findByIdAndDelete(categoryId);
-    return deletedCategory;
+    return await this.categoryModel.findByIdAndDelete(categoryId);
   }
 }
 

@@ -9,6 +9,7 @@ class CategoryService {
   }
 
   async createCategory(req) {
+    console.log("service log", req.body);
     const response = {};
     const { categoryName, description, parentId, active } = req.body;
 
@@ -58,7 +59,7 @@ class CategoryService {
 
       if (!category) {
         response.message = CONSTANTS.SERVER_ERROR;
-        response.status = CONSTANTS.SERVER_NOT_CREATED_HTTP_CODE;
+        response.status = 404;
         return response;
       }
 
@@ -68,7 +69,7 @@ class CategoryService {
     } catch (error) {
       console.error("Error creating category:", error);
       response.status = CONSTANTS.SERVER_ERROR;
-      response.message = CONSTANTS.SERVER_NOT_CREATED_HTTP_CODE;
+      response.message = 404;
       return response;
     }
   }
@@ -79,7 +80,7 @@ class CategoryService {
     const { categoryName, description, parentId, active } = req.body;
     let parentName = null;
 
-    if (parentId !== "null") {
+    if (parentId) {
       try {
         const foundedCategory =
           await this.categoryRepo.findCategoryById(parentId);
@@ -123,8 +124,8 @@ class CategoryService {
       );
 
       if (!updatedCategory) {
-        response.message = error.message || error;
-        response.status = CONSTANTS.SERVER_NOT_UPDATED_HTTP_CODE;
+        response.message = "Couldn't update category";
+        response.status = 404;
         return response;
       }
 
