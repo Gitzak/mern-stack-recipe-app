@@ -74,10 +74,11 @@ class CategoryService {
     }
   }
 
-  async updateCategory(req) {
+  async updateCategory(req, res, next) {
     const response = {};
     const categoryId = req.params.id;
     const { categoryName, description, parentId, active } = req.body;
+
     let parentName = null;
 
     if (parentId) {
@@ -87,9 +88,10 @@ class CategoryService {
         parentName = foundedCategory.categoryName;
       } catch (error) {
         console.error("Error finding parent category:", error);
-        response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-        response.message = error.message || error;
-        return response;
+        return {
+          status: 404, // Not Found
+          message: "Parent category not found",
+        };
       }
     }
 
@@ -102,13 +104,14 @@ class CategoryService {
         imageUrl = result.secure_url;
       } catch (error) {
         console.error("Error uploading image to Cloudinary:", error);
-        response.status = CONSTANTS.SERVER_ERROR;
-        response.message = CONSTANTS.SERVER_NOT_UPDATED_HTTP_CODE;
-        return response;
+        return {
+          status: 500, // Internal Server Error
+          message: "Error uploading image to Cloudinary",
+        };
       }
     }
 
-    const newCategory = {
+    const updatedCategoryData = {
       categoryName,
       description,
       parentName,
@@ -120,23 +123,24 @@ class CategoryService {
     try {
       const updatedCategory = await this.categoryRepo.updateCategory(
         categoryId,
-        newCategory,
+        updatedCategoryData,
       );
 
       if (!updatedCategory) {
-        response.message = "Couldn't update category";
-        response.status = 404;
-        return response;
+        return {
+          status: 404, // Not Found
+          message: "Category not found or couldn't be updated",
+        };
       }
 
-      response.message = "UPDATED";
-      response.status = CONSTANTS.SERVER_UPDATED_HTTP_CODE;
-      return response;
+      return {
+        status: 200, // OK
+        message: "Category updated successfully",
+        data: updatedCategory,
+      };
     } catch (error) {
       console.error("Error updating category:", error);
-      response.status = CONSTANTS.SERVER_ERROR;
-      response.message = error.message || error;
-      return response;
+      next(error);
     }
   }
 

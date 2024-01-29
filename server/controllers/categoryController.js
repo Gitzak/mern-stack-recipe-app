@@ -30,7 +30,7 @@ exports.getCategoryById = asyncHandler(async (req, res, next) => {
 
 // update category
 exports.updateCategory = asyncHandler(async (req, res, next) => {
-  const updatedCategory = await categoryServ.updateCategory(req);
+  const updatedCategory = await categoryServ.updateCategory(req, res, next);
   res.status(updatedCategory.status).json(updatedCategory);
 });
 

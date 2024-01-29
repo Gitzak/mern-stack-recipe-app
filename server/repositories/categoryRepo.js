@@ -11,7 +11,7 @@ class CategoryRepository {
     return await this.categoryModel.findByIdAndUpdate(
       categoryId,
       categoryEntry,
-      { runValidators: false, new: true },
+      { runValidators: false, new: true, timeout: 30000 }, // Increase timeout to 30 seconds
     );
   }
 
