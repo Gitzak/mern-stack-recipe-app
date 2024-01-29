@@ -11,6 +11,17 @@ exports.GetRecipes = asyncHandler(async (req, res, next) => {
   res.status(recipes.status).json(recipes);
 });
 
+// Create a new Recipe
+exports.createRecipe = asyncHandler(async (req, res, next) => {
+  const newRecipe = await recipeServ.createRecipe(req);
+  res.status(newRecipe.status).json(newRecipe);
+});
+
+exports.getRecipeById = asyncHandler(async (req, res, next) => {
+  const recipe = await recipeServ.getRecipeById(req);
+  res.status(recipe.status).json(recipe);
+});
+
 exports.UpdateRecipe = asyncHandler(async (req, res, next) => {
   const recipe = await recipeServ.UpdateRecipe(req);
   res.status(recipe.status).json(recipe);
