@@ -1,5 +1,6 @@
 const CONSTANTS = require("../constants");
 const cloudinary = require("../utils/cloudinary");
+const { body } = require("express-validator");
 
 class CategoryService {
   constructor(categoryRepo, RecipeRepo) {
@@ -10,55 +11,66 @@ class CategoryService {
   async createCategory(req) {
     const response = {};
     const { categoryName, description, parentId, active } = req.body;
+
     const file = req.file;
+
     let parentName;
-    // if (parentId !== "null") {
-    //   try {
-    //     const foundedCategory = await this.categoryRepo.findCategoryById({
-    //       _id: parentId,
-    //     });
-    //     parentName = foundedCategory.categoryName;
-    //   } catch (error) {
-    //     response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-    //     response.message = error.message || error;
-    //     return response;
-    //   }
-    // }
+
+    // Uncomment this block if you need to fetch parentName
+    if (parentId) {
+      try {
+        const foundedCategory =
+          await this.categoryRepo.findCategoryById(parentId);
+        parentName = foundedCategory.categoryName;
+      } catch (error) {
+        console.error("Error finding parent category:", error);
+        response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
+        response.message = error.message || error;
+        return response;
+      }
+    }
 
     let imageUrl = null;
 
     if (file) {
-      imageUrl = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(file.path, (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result.secure_url);
-          }
-        });
-      });
+      try {
+        const result = await cloudinary.uploader.upload(file.path);
+        imageUrl = result.secure_url;
+      } catch (error) {
+        console.error("Error uploading image to Cloudinary:", error);
+        response.status = CONSTANTS.SERVER_ERROR;
+        response.message = error.message || error;
+        return response;
+      }
     }
+
     const newCategory = {
       categoryName,
       description,
       parentId,
       active,
-      // parentName,
-      // categoryImage: imageUrl ? imageUrl : null,
+      parentName,
+      categoryImage: imageUrl || null,
     };
 
-    const category = await this.categoryRepo.createCategory(newCategory);
+    try {
+      const category = await this.categoryRepo.createCategory(newCategory);
 
-    if (!category) {
-      response.message = CONSTANTS.SERVER_ERROR;
-      response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
+      if (!category) {
+        response.message = CONSTANTS.SERVER_ERROR;
+        response.status = CONSTANTS.SERVER_NOT_CREATED_HTTP_CODE;
+        return response;
+      }
+
+      response.message = category;
+      response.status = CONSTANTS.SERVER_CREATED_HTTP_CODE;
+      return response;
+    } catch (error) {
+      console.error("Error creating category:", error);
+      response.status = CONSTANTS.SERVER_ERROR;
+      response.message = CONSTANTS.SERVER_NOT_CREATED_HTTP_CODE;
       return response;
     }
-
-    response.message = category;
-    response.status = CONSTANTS.SERVER_CREATED_HTTP_CODE;
-
-    return response;
   }
 
   async updateCategory(req) {
@@ -66,15 +78,16 @@ class CategoryService {
     const categoryId = req.params.id;
     const { categoryName, description, parentId, active } = req.body;
     let parentName = null;
-    if (parentId != "null") {
+
+    if (parentId !== "null") {
       try {
-        const foundedCategory = await this.categoryRepo.findCategoryById({
-          _id: parentId,
-        });
+        const foundedCategory =
+          await this.categoryRepo.findCategoryById(parentId);
         parentName = foundedCategory.categoryName;
-      } catch {
+      } catch (error) {
+        console.error("Error finding parent category:", error);
         response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-        response.message = CONSTANTS.SERVER_ERROR;
+        response.message = error.message || error;
         return response;
       }
     }
@@ -83,15 +96,15 @@ class CategoryService {
     let imageUrl = null;
 
     if (file) {
-      imageUrl = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(file.path, (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result.secure_url);
-          }
-        });
-      });
+      try {
+        const result = await cloudinary.uploader.upload(file.path);
+        imageUrl = result.secure_url;
+      } catch (error) {
+        console.error("Error uploading image to Cloudinary:", error);
+        response.status = CONSTANTS.SERVER_ERROR;
+        response.message = CONSTANTS.SERVER_NOT_UPDATED_HTTP_CODE;
+        return response;
+      }
     }
 
     const newCategory = {
@@ -100,23 +113,30 @@ class CategoryService {
       parentName,
       parentId,
       active,
-      categoryImage: imageUrl ? imageUrl : null,
+      categoryImage: imageUrl || null,
     };
 
-    const updatedCategory = await this.categoryRepo.updateCategory(
-      categoryId,
-      newCategory,
-    );
+    try {
+      const updatedCategory = await this.categoryRepo.updateCategory(
+        categoryId,
+        newCategory,
+      );
 
-    if (!updatedCategory) {
-      response.message = CONSTANTS.SERVER_ERROR;
-      response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
+      if (!updatedCategory) {
+        response.message = error.message || error;
+        response.status = CONSTANTS.SERVER_NOT_UPDATED_HTTP_CODE;
+        return response;
+      }
+
+      response.message = "UPDATED";
+      response.status = CONSTANTS.SERVER_UPDATED_HTTP_CODE;
+      return response;
+    } catch (error) {
+      console.error("Error updating category:", error);
+      response.status = CONSTANTS.SERVER_ERROR;
+      response.message = error.message || error;
       return response;
     }
-
-    response.message = "UPDATED";
-    response.status = CONSTANTS.SERVER_UPDATED_HTTP_CODE;
-    return response;
   }
 
   async getCategories(req) {

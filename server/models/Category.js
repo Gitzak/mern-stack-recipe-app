@@ -5,7 +5,7 @@ const categorySchema = new mongoose.Schema(
   {
     categoryName: {
       type: String,
-      // required: true,
+      // required: [true, "please name the category"],
     },
     description: {
       type: String,
@@ -33,6 +33,4 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Category = mongoose.model("Category", categorySchema);
-
-module.exports = { Category };
+module.exports = mongoose.model("Category", categorySchema);

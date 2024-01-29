@@ -1,6 +1,6 @@
 const asyncHandler = require("../middleware/asyncHandler");
-const { Category } = require("../models/Category");
-const { Recipe } = require("../models/Recipe");
+const Category = require("../models/Category");
+const Recipe = require("../models/Recipe");
 const { CategoryRepository } = require("../repositories/categoryRepo");
 const { RecipeRepo } = require("../repositories/recipeRepo");
 const { CategoryService } = require("../services/categoryService");
