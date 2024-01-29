@@ -1,14 +1,8 @@
 const express = require("express");
-const { createCategory, getCategories, getCategoryById, updateCategory, deleteCategory } = require("../../controllers/categoryController");
 const upload = require("../../middleware/multer");
+const { createCategory, getCategories, getCategoryById, updateCategory, deleteCategory } = require("../../controllers/categoryController");
 const router = express.Router();
-const {
-  createCategory,
-  deleteCategory,
-  getCategories,
-  getCategoryById,
-  updateCategory,
-} = require("../../controllers/categoryController");
+
 // // Create a new Category
 router.post("/", createCategory);
 // // List all the Category

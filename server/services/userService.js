@@ -11,8 +11,6 @@ class UserService {
     this.userRepo = userRepo;
   }
 
-<<<<<<< HEAD
-=======
   async getUsers(req) {
     const query = req.query.query;
     const page = parseInt(req.query.page) || 1;
@@ -72,7 +70,6 @@ class UserService {
     }
   }
 
->>>>>>> kayzou
   async AddUser(req) {
     const response = {};
 
@@ -90,10 +87,7 @@ class UserService {
     };
 
     const user = await this.userRepo.AddUser(newUser);
-<<<<<<< HEAD
-=======
     console.log("user ", user);
->>>>>>> kayzou
 
     if (!user) {
       response.message = CONSTANTS.SERVER_ERROR;
@@ -101,11 +95,7 @@ class UserService {
       return response;
     }
 
-<<<<<<< HEAD
-    const sendedMail = await SendMailToUser({
-=======
     const sendedMail = await SendMailToClient({
->>>>>>> kayzou
       userEmail: newUser.email,
       userPassword: newUser.password,
     });
@@ -268,35 +258,7 @@ class UserService {
       response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
       throw new Error("Couldn't delete this user" + id);
     }
-<<<<<<< HEAD
-  async getUserById(req) {
-    const userId = req.profile.userId;
-
-    const response = {};
-    try {
-      const user = await this.userRepo.FindById(userId);
-      if (!user) {
-        response.message = CONSTANTS.INVALID_USER_ID;
-        response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
-        return response;
-      }
-      response.data = {
-        ...user._doc,
-        creationDate: user.creationDateFormatted,
-        lastLogin: user.lastLoginFormatted,
-        lastUpdate: user.lastUpdateFormatted,
-      };
-      response.status = CONSTANTS.SERVER_OK_HTTP_CODE;
-
-      return response;
-    } catch (error) {
-      response.message = error.message;
-      response.status = CONSTANTS.SERVER_ERROR_HTTP_CODE;
-      return response;
-    }
-=======
     return response;
->>>>>>> kayzou
   }
 }
 

@@ -11,7 +11,6 @@ const categoryServ = new CategoryService(categoryRepo);
 
 // create new category
 exports.createCategory = asyncHandler(async (req, res, next) => {
-  console.log("controller req", req.body);
   const newCategory = await categoryServ.createCategory(req);
   res.status(newCategory.status).json(newCategory);
 });
