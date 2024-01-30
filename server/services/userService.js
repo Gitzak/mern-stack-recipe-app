@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const sendMailToClient = require("../utils/sendMailToClient");
 // const { sign } = require("../utils/JWT.js");
 const { sendResponse } = require("../Helpers/sendResponse");
+const cloudinary = require("../utils/cloudinary");
 
 class UserService {
   constructor(userRepo) {
@@ -36,8 +37,7 @@ class UserService {
       }
     } else {
       response.status = CONSTANTS.SERVER_OK_HTTP_CODE;
-      const users = await this.userRepo.getUsers(skip, limit, sort);
-      response.data = users;
+      response.data = await this.userRepo.getUsers(skip, limit, sort);
       return response;
     }
   }
@@ -110,34 +110,41 @@ class UserService {
     const response = {};
 
     const { userName, email, password } = req.body;
-
+    const file = req.file;
+    let imageUrl = null;
+    if (file) {
+      try {
+        const result = await cloudinary.uploader.upload(file.path);
+        imageUrl = result.secure_url;
+        // console.log(imageUrl);
+      } catch (error) {
+        console.error("Error uploading image to Cloudinary:", error);
+        response.status = CONSTANTS.SERVER_ERROR;
+        response.message = error.message || error;
+        return response;
+      }
+    }
     const hashedPass = await HashPassword(password);
-
     const newUser = {
-      role: "Client",
       userName,
       email,
       hashedPass,
       password,
+      profilePicture: imageUrl || null,
     };
-
     const user = await this.userRepo.registerUser(newUser);
-
     if (!user) {
       response.message = CONSTANTS.SERVER_ERROR;
       response.status = CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE;
       return response;
     }
-
     const sendedMail = await sendMailToClient({
       userId: user._id,
       userEmail: user.email,
       userPassword: password,
     });
-
-    response.message = CONSTANTS.USER_CREATED;
+    response.message = newUser;
     response.status = CONSTANTS.SERVER_CREATED_HTTP_CODE;
-
     return response;
   }
 
@@ -186,13 +193,24 @@ class UserService {
   async updateUser(req) {
     try {
       const id = req.params.id;
-
+      const file = req.file;
+      let imageUrl = null;
       if (req.user.userId === id) {
         const data = req.body;
 
         if (data.password) {
           data.hashedPass = await HashPassword(data.password);
           data.password = data.hashedPass;
+        }
+        if (file) {
+          try {
+            const result = await cloudinary.uploader.upload(file.path);
+            imageUrl = result.secure_url;
+            imageUrl && (data.profilePicture = imageUrl);
+          } catch (error) {
+            console.error("Error uploading image to Cloudinary:", error);
+            throw new Error(error.message || error);
+          }
         }
         const user = await this.userRepo.updateUser(id, data);
 

@@ -9,7 +9,7 @@ class CategoryService {
   }
 
   async createCategory(req) {
-    console.log("service log", req.body);
+    // console.log("service log", req.body);
     const response = {};
     const { categoryName, description, parentId, active } = req.body;
 
@@ -167,7 +167,9 @@ class CategoryService {
         );
       } else {
         // If no search query, retrieve all categories
-        categories = await this.categoryRepo.getCategories(skip, limit, sort);
+        categories = await (
+          await this.userRepo.getUsers(skip1, limit1, sort1)
+        )(skip, limit, sort);
       }
 
       if (!categories || categories.length === 0) {
