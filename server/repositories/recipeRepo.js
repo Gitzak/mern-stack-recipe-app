@@ -18,7 +18,9 @@ class RecipeRepo {
   }
 
   async createRecipe(recipe) {
+    // console.log(recipe);
     const newRecipe = await this.recipeModel.create(recipe);
+    console.log('newRecipe' , newRecipe);
     return newRecipe;
   }
 
