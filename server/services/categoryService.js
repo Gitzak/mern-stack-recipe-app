@@ -167,9 +167,7 @@ class CategoryService {
         );
       } else {
         // If no search query, retrieve all categories
-        categories = await (
-          await this.userRepo.getUsers(skip1, limit1, sort1)
-        )(skip, limit, sort);
+        categories = await this.categoryRepo.getCategories(skip, limit, sort);
       }
 
       if (!categories || categories.length === 0) {

@@ -95,7 +95,7 @@ class UserService {
       return response;
     }
 
-    const sendedMail = await SendMailToClient({
+    const sendedMail = await sendMailToClient({
       userEmail: newUser.email,
       userPassword: newUser.password,
     });
