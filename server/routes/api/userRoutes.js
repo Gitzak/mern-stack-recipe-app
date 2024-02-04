@@ -3,6 +3,7 @@ const router = express.Router();
 const { loginValidator } = require("../../Helpers/Validators");
 const { TokenCheck } = require("../../middleware/TokenCheck");
 const upload = require("../../middleware/multer");
+const { isAdmin } = require("../../middleware/isAdmin");
 
 const {
   createUser,
@@ -21,6 +22,12 @@ router.post("/", createUser);
 router.post("/register", upload.single("image"), registerUser);
 // login user route
 router.post("/login", loginValidator, loginUser);
+// get profile
+router.get("/profile", isAdmin, (req, res) => {
+  res.status(200).json({
+      data: req.profile,
+  });
+});
 //user validation account
 router.put("/validate/:id", validateUser);
 // //get all users list
