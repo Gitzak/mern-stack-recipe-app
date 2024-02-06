@@ -9,6 +9,7 @@ class CategoryService {
   }
 
   async createCategory(req) {
+    // console.log("service log", req.body);
     const response = {};
     const { categoryName, description, parentId, active } = req.body;
 

@@ -60,7 +60,10 @@ const recipeSchema = new mongoose.Schema(
       },
     ],
     recipeImages: [String],
-    comments: [commentSchema],
+    comments: {
+      type: [commentSchema],
+      default: null, 
+    },
   },
   { timestamps: true },
 );

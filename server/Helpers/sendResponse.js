@@ -2,6 +2,6 @@ exports.sendResponse = (message,status,data)=>{
     const response = {};
     response.status = status;
     response.message = message;
-    response.dataResponse = data;
+    response.data = data;
     return response
 }

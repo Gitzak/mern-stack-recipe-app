@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { TokenCheck } = require("../../middleware/TokenCheck");
+const upload = require("../../middleware/multer");
+
+
 const {
     createRecipe,
     GetRecipes,
@@ -8,9 +12,9 @@ const {
     DeleteRecipe,
 } = require("../../controllers/recipeController");
 
-//create new recipe
-router.post("/", createRecipe);
-//get all recipes list
+// //create new recipe
+router.post("/",TokenCheck,upload.array("images" , 5), createRecipe);
+// //get all recipes list
 router.get("/", GetRecipes);
 //get recipe by id
 router.get("/:id", getRecipeById);

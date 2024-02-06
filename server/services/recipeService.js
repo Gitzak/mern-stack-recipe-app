@@ -1,6 +1,5 @@
 const CONSTANTS = require("../constants");
-const config = require("./../config/keys");
-
+const cloudinary  = require("../utils/cloudinary");
 class RecipeService {
   constructor(recipeRepo) {
     this.recipeRepo = recipeRepo;
@@ -19,7 +18,9 @@ class RecipeService {
   }
 
   async createRecipe(req) {
+
     const response = {};
+    const userOwner = req.user.userId
     try {
       // Extract data from the request
 
@@ -27,19 +28,36 @@ class RecipeService {
         name,
         ingredients,
         rating,
-        userOwner,
         nutrition,
         comments,
         categories,
-        recipeImages,
       } = req.body;
+
+      const files = req.files;
+      let imagesUrls = null;
+      if (files) {
+        const imagesUrlPromises = req.files.map((file) => {
+          return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload(file.path, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result.secure_url);
+              }
+            });
+          });
+        });
+
+         imagesUrls = await Promise.all(imagesUrlPromises);
+      }
+
       const newRecipe = {
         name,
         ingredients,
         rating,
         userOwner,
         nutrition,
-        // recipeImages: imagesUrls,
+        recipeImages: imagesUrls || null,
         comments,
         categories,
       };
@@ -57,6 +75,7 @@ class RecipeService {
       response.data = recipe;
       return response;
     } catch (error) {
+      console.log(error);
       response.message = CONSTANTS.SERVER_ERROR;
       response.status = CONSTANTS.SERVER_ERROR_HTTP_CODE;
       return response;

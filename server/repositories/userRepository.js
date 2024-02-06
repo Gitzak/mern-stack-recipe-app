@@ -36,13 +36,14 @@ class UserRepository {
   }
 
   async registerUser(user) {
-    const { role, userName, email, hashedPass } = user;
+    const { role, userName, email, hashedPass, profilePicture } = user;
 
     const createUser = await this.userModel.create({
       role,
       userName,
       email,
       password: hashedPass,
+      profilePicture,
     });
 
     const clientWithoutPassword = createUser.toObject();
