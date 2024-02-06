@@ -3,18 +3,10 @@ const upload = require("../../middleware/multer");
 const { createCategory, getCategories, getCategoryById, updateCategory, deleteCategory } = require("../../controllers/categoryController");
 const router = express.Router();
 
-const upload = require("../../middleware/multer");
 
-const {
-  createCategory,
-  deleteCategory,
-  getCategories,
-  getCategoryById,
-  updateCategory,
-} = require("../../controllers/categoryController");
-// // Create a new Category
+// Create a new Category
 router.post("/", upload.single("image"), createCategory);
-// // List all the Category
+// List all the Category
 router.get("/", getCategories);
 // Get Category by ID
 router.get("/:id", getCategoryById);
