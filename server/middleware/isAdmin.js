@@ -14,9 +14,9 @@ exports.isAdmin = (req, res, next) => {
     }
 
     const userData = verify(token);
-    req.userRole = userData.userRole;
+    req.role = userData.role;
 
-    if (req.userRole !== "ADMIN") {
+    if (req.role !== "Admin") {
         return res.status(CONSTANTS.SERVER_FORBIDDEN_HTTP_CODE).json({
             message: CONSTANTS.INSUFFICIENT_PRIVILEGE,
             status: CONSTANTS.SERVER_FORBIDDEN_HTTP_CODE,

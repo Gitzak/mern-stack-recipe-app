@@ -20,7 +20,7 @@ export const mainListItems = (
     <React.Fragment>
         <ListItemButton component={NavLink} to="/dashboard/">
             <ListItemIcon>
-                <DashboardIcon sx={{ color: "white" }} />
+                <DashboardIcon sx={{ color: "#ffffff" }} />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
         </ListItemButton>

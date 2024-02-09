@@ -18,7 +18,7 @@ import { Outlet } from "react-router-dom";
 const defaultTheme = createTheme({
     palette: {
         primary: {
-            main: "#1d00a0",
+            main: "#7752FE",
         },
     },
     components: {
