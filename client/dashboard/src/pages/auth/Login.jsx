@@ -39,13 +39,16 @@ export const Login = () => {
         try {
             const response = await LoginUser(body);
             const loggedUser = response.data.data;
-
-            localStorage.setItem("userId", loggedUser.user._id);
-            localStorage.setItem("token", JSON.stringify(loggedUser.token));
-            setCurrentUser(loggedUser);
-            navigate("/dashboard");
+            if (loggedUser.token) {
+                localStorage.setItem("userId", loggedUser.user._id);
+                localStorage.setItem("token", JSON.stringify(loggedUser.token));
+                setCurrentUser(loggedUser);
+                navigate("/dashboard");
+            } else {
+                setError(response.data.message);
+            }
         } catch (error) {
-            setError(error.response.data.message);
+            setError(error.message);
         }
     };
 
